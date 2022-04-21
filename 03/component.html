@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Sample</title>
+</head>
+
+<body>
+    <div id="app">
+        <h3>앱1</h3>
+        <my-component>
+            <!-- 전역 컴포넌트 -->
+        </my-component>
+        <my-local-component>
+            <!-- 지역 컴포넌트 -->
+        </my-local-component>
+    </div>
+    <hr>
+    <div id="app2">
+        <h3>앱2</h3>
+        <my-component>
+            <!-- 전역 컴포넌트 -->
+        </my-component>
+        <my-local-component>
+            <!-- 지역 컴포넌트 -->
+        </my-local-component>
+    </div>
+    <!-- <script src="https://unpkg.com/vue@3"></script> -->
+    <script src="https://unpkg.com/vue@2.5.2/dist/vue.js"></script>
+    <script>
+        // // 지역 컴포넌트 정의
+        // const lcp = {
+        //     template: '<div>지역 컴포넌트 등록됨</div>'
+        // }
+
+        // Vue.createApp({
+        //     components: {
+        //         "my-local-component": lcp
+        //     }
+        // }).component("my-component", {
+        //     template: '<div>전역 컴포넌트 등록됨</div>'
+        // }).mount("#app");
+
+        // Vue.createApp({}).component("my-component", {
+        //     template: '<div>전역 컴포넌트 등록됨</div>'
+        // }).mount("#app2");
+
+
+        // 전역 컴포넌트 등록
+        Vue.component('my-component', {
+            template: '<div>전역 컴포넌트 등록됨</div>'
+        });
+
+        // 지역 컴포넌트 내용
+        var cmp = {
+            template: '<div>지역 컴포넌트 등록됨</div>'
+        };
+
+        new Vue({
+            el: '#app',
+            // 지역 컴포넌트 등록
+            components: {
+                'my-local-component': cmp
+            }
+        });
+
+        new Vue({
+            el: '#app2'
+        });
+    </script>
+</body>
+
+</html>
