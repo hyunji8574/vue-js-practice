@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>뷰 컴포넌트간 통신</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <h2>뷰 컴포넌트간 통신</h2>
+    <hr>
+    <div id="app1">
+        <div class="header">컴포넌트 간 통신과 유효 범위</div>
+        <component1></component1>
+        <component2></component2>
+        <div class="comment">
+            두번째 컴포넌트에서 첫번째 컴포넌트의 값을 참조하지 못하는 이유는
+            뷰 컴포넌트는 고유한 스코프(Scope)를 가지고 있어 유효범위가 독립적이기 때문이다.<br>
+            언뜻 보면 불편해 보이지만, 뷰에서 미리 정의해둔 방식대로 앱을 만들다보면 일관된 데이터 흐름을
+            가지게 되어 협업하는데 유용하다.
+        </div>
+    </div>
+    <div id="app2">
+        <div class="header">상위 &gt; 하위 컴포넌트 통신</div>
+        <div class="comment">
+            기본적으로 상위(부모)컴포넌트에서 하위(자식)컴포넌트에게 데이터를 전달할수 있다.<br>
+            부모 컴포넌트는 자식에게 props를, 자식 컴포넌트는 부모에게 이벤트를 전달할수 있다.
+        </div>
+        <child-component v-bind:propsdata="message"></child-component>
+        <div class="comment">
+            부모 컴포넌트로 인스턴스를 이용할수도 있다.<br>
+            위는 뷰 인스턴스의 message 속성값을 자식 컴포넌트에서 props 속성을 통해 전달받은 예시이다.
+        </div>
+    </div>
+    <div id="app3">
+        <div class="header">하위 &lt; 상위 컴포넌트 통신</div>
+        <div class="comment">
+            자식에서 부모 컴포넌트로의 통신은 이벤트를 발생시켜 상위 컴포넌트에서 수신을 받고 메서드를 호출시키면 된다.
+        </div>
+        <child-component v-on:show-log="printText">
+            <!-- <button v-on:click = "showLog">show</button> -->
+        </child-component>
+        <div class="comment">
+            위는 show 버튼을 누르면 이벤트를 발생시키고 이를 이용해 상위 컴포넌트의 printText()메서드를 실행시키는 예시이다.<br>
+        </div>
+    </div>
+    <div id="app4">
+        <div class="header">이벤트 버스</div>
+        <div class="comment">
+            관계가 딱히 없거나 같은 수준의 관계를 가진 컴포넌트간 통신의 경우, 상위 컴포넌트까지 올라가야 하므로 굉장히 번거롭다.<br>
+            이때문에 이런 경우 이벤트 버스를 통해 통신하는 것이 좋다.
+        </div>
+        <pre class="code">
+            // 이벤트 버스 형식 예시
+
+            // 이벤트 버스를 위한 추가 인스턴스
+            var eventBus = new Vue();
+
+
+            // 이벤트를 보내는 컴포넌트
+            methods: {
+                메서드명: function () {
+                    eventBus.$emit("이벤트명",데이터]);
+                }
+            }
+
+            // 이벤트를 받는 컴포넌트
+            methods: {
+                created() {
+                   eventBus.$on("이벤트명",function(데이터) {
+                       ...
+                   });
+                },
+            }
+        </pre>
+        <child-component>
+            <!-- <div>하위 컴포넌트 영역
+                <button v-on:click = "showLog">show</button>
+            </div> -->
+        </child-component>
+        <div class="comment">
+            위는 show 버튼을 누르면 이벤트 버스를 통해 상위 컴포넌트에서 이벤트를 전달받는 예시이다.<br>
+            이벤트 버스를 활용하면 컴포넌트간에 데이터를 주고받기 편하지만, 컴포넌트가 많아질수록 어디에서 데이터를 주고받는지 파악하기 힘들어진다. 이런 경우 상태 관리 라이브러리 뷰엑스(Vuex)를 활용할수도 있다.
+        </div>
+    </div>
+</body>
+<script src="https://unpkg.com/vue@2.5.2/dist/vue.js"></script>
+<script>
+
+
+    /**
+     * 
+     * 예제1
+     * 
+     */
+    // 컴포넌트1
+    var cmp1 = {
+        template: "<div>첫번째 지역 컴포넌트 : {{cmp1Data}}</div>",
+        data: function () {
+            return {
+                cmp1Data: 100
+            }
+        }
+    }
+    // 컴포넌트2
+    var cmp2 = {
+        template: "<div>두번째 지역 컴포넌트 : {{cmp2Data}}</div>",
+        data: function () {
+            return {
+                // 첫번째 컴포넌트의 데이터 참조시도
+                cmp2Data: cmp1.data.cmp1Data
+            }
+        }
+    }
+
+    new Vue({
+        el: "#app1",
+        components: {
+            "component1": cmp1,
+            "component2": cmp2
+        }
+    })
+
+    /**
+     * 
+     * 예제 2
+     * 
+     */
+    Vue.component("child-component", {
+        // 자식 컴포넌트에 props 속성 추가
+        // propsdata는 상위 컴포넌트의 message속성 값을 받아옴
+        props: ["propsdata"],
+        template: "<p>{{propsdata}}</p>"
+    });
+
+    new Vue({
+        el: "#app2",
+        data: {
+            // 부모 컴포넌트에 message 속성 추가
+            message: "Hello Vue.js! 부모 컴포넌트로부터"
+        }
+    });
+
+    /**
+     * 
+     * 예제3
+     * 
+     */
+    Vue.component("child-component", {
+        template: "<button v-on:click = 'showLog'>show</button>",
+        methods: {
+            showLog: function () {
+                // 부모 컴포넌트의 이벤트 호출
+                this.$emit("show-log");
+            }
+        }
+    });
+
+    new Vue({
+        el: "#app3",
+        data: {
+            message: "Hello Vue.js! 부모 컴포넌트로부터"
+        },
+        methods: {
+            printText: function () {
+                alert("이벤트 호출됨");
+            }
+        }
+    });
+
+    /**
+     * 
+     * 예제4
+     * 
+     */
+    // 이벤트 버스를 위한 추가 인스턴스
+    var eventBus = new Vue();
+
+    Vue.component("child-component", {
+        // 이벤트를 보내는 컴포넌트
+        template: "<div>하위 컴포넌트 영역" +
+            " <button v-on:click = 'showLog'>show</button>" +
+            "</div>",
+        methods: {
+            showLog: function () {
+                eventBus.$emit("triggerEventBus", 100);
+            }
+        }
+    });
+
+    new Vue({
+        // 이벤트를 받는 컴포넌트
+        el: "#app4",
+        created() {
+            eventBus.$on("triggerEventBus", function (value) {
+                alert("이벤트 전달됨, 값:" + value);
+            });
+        },
+    })
+
+</script>
+
+</html>
