@@ -1,6 +1,6 @@
 # vue-js-practice
-Vue.js 입문(Vue.js 2.5버전)
-
+Vue.js 입문(Vue.js 2.5버전)   
+참고: https://github.com/joshua1988/doit-vuejs.git
 
 **1일차**   
 >뷰 인스턴스 생성, 뷰 인스턴스의 생명주기, 전역과 지역 컴포넌트 등등...   
