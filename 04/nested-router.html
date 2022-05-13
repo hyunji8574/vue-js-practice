@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>네스티드 라우터</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <h2>네스티드 라우터</h2>
+    <div class="comment">
+        여러 컴포넌트를 동시에 표시할 수 있는 라우터.<br>
+        상위 컴포넌트 아래 하위 컴포넌트를 포함하는 구조로 구성한다.
+    </div>
+    <hr>
+
+    <div class="app">
+        <div class="header">네스티드 라우터 예제</div>
+        <router-view>
+            <!-- <div>
+                User Component
+                <router-view>
+                    <p>User Profile Component</p>
+                    <p>User Post Component</p>
+                </router-view>
+            </div> -->
+        </router-view>
+    </div>
+    <pre class="code">
+    </pre>
+</body>
+<script src="https://unpkg.com/vue@2.5.2/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+
+<script>
+    // 컴포넌트 정의
+    var User = {
+        template: '<div>' +
+            '유저' +
+            '<router-view></router-view>' +
+            '</div>'
+    };
+    var UserProflie = {
+        template: "<p>유저 정보</p>"
+    };
+    var UserPost = {
+        template: "<p>유저 포스트</p>"
+    };
+
+    // 각 컴포넌트 연결
+    var routes = [{
+            path: '/user', component: User, children: [
+                { path: '/post', component: UserProflie },
+                { path: '/profile', component: UserPost }
+            ]
+        }
+    ]
+
+    // 라우터 정의
+    const router = new VueRouter({
+        routes
+    });
+
+    // 인스턴스 추가
+    new Vue({
+        router
+    }).$mount('.app');
+</script>
+
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>네임드 뷰</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <h2>네임드 뷰</h2>
+    <div class="comment">
+        네스티드 라우터처럼 여러 컴포넌트를 표시하는 라우팅 방식.<br>
+        네스티드 라우터와는 달리 상위 컴포넌트 없이 같은 레벨에서 여러 컴포넌트를 한번에 표시한다.
+    </div>
+    <hr>
+
+    <div class="app">
+        <div class="header">네임드 뷰 예제</div>
+        <!-- 라우팅 영역 -->
+        <router-view name="header"></router-view>
+        <router-view></router-view>
+        <router-view name="footer"></router-view>
+    </div>
+    <pre class="code">
+    </pre>
+</body>
+<script src="https://unpkg.com/vue@2.5.2/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+
+<script>
+    // 컴포넌트 정의
+    const Body = {template: '<div>Body</div>'};
+    const Header = {template: '<div>Header Area</div>'};
+    const Footer = {template: '<div>Footer Area</div>'};
+
+    // 각 컴포넌트 연결
+    // var routes = [{
+    //         path: '/user', component: User, children: [
+    //             { path: '/post', component: UserProflie },
+    //             { path: '/profile', component: UserPost }
+    //         ]
+    //     }
+    // ]
+
+    // 라우터 정의, 컴포넌트 연결
+    const router = new VueRouter({
+        routes: [{
+            path: '/', components: {
+                // router-view의 name속성과 연결
+                default: Body,
+                header: Header,
+                footer: Footer 
+            }
+        }]
+    });
+
+    // 인스턴스 추가
+    new Vue({
+        router
+    }).$mount('.app');
+</script>
+
+</html>
